@@ -32,4 +32,11 @@ export class TurbowarpVMEngine implements ScratchLikeVirtualMachine {
       }
     }
   }
+
+  projectUsesVideo(): boolean {
+    const vm = (window as any).vm;
+    return (
+      vm.runtime.extensionManager._loadedExtensions as Map<string, string>
+    ).has("videoSensing");
+  }
 }

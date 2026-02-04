@@ -4,6 +4,7 @@ import {
   MultiPlayEvents,
   ScratchCoords,
   ScratchLikeVirtualMachine,
+  ForbiddenBecauseUsesVideoError,
 } from "./protocol";
 
 export class MultiPlayKernel {
@@ -87,6 +88,12 @@ export class MultiPlayKernel {
    * Requires an engine with canvas streaming capabilities for the host role.
    */
   async host() {
+    if (!this.engine || this.engine.projectUsesVideo()) {
+      this.onStatusChange("forbidden-video");
+      this.cleanup();
+      throw new ForbiddenBecauseUsesVideoError();
+    }
+
     this.onStatusChange("initial-connect");
     this.socket = new WebSocket(this.config.signalingUrl);
 

@@ -17,7 +17,7 @@ interface MultiPlayConfig {
   };
   logLevel?: "debug" | "info" | "warn" | "error";
 }
-type MultiPlayStatus = "initial-connect" | "connected-signaling" | "connected-joining" | "waiting-host" | "join-failed" | "signaling-creating-answer" | "signaling-setting-remote" | "disconnected-host" | "error-socket" | "disconnected-closed" | "peer-joined";
+type MultiPlayStatus = "initial-connect" | "connected-signaling" | "connected-joining" | "waiting-host" | "join-failed" | "signaling-creating-answer" | "signaling-setting-remote" | "disconnected-host" | "error-socket" | "disconnected-closed" | "peer-joined" | "forbidden-video";
 type MultiPlayEvents = {
   type: "status";
   payload: MultiPlayStatus;
@@ -53,7 +53,12 @@ interface ScratchLikeVirtualMachine {
     };
   }): void;
   getCanvas(): HTMLCanvasElement | null;
+  projectUsesVideo(): boolean;
 }
+/**
+ * This error is thrown because MultiPlay cannot be permitted when video is used in projects (for child privacy reasons)
+ */
+declare class ForbiddenBecauseUsesVideoError extends Error {}
 //#endregion
 //#region src/core/kernel.d.ts
 declare class MultiPlayKernel {
@@ -166,6 +171,7 @@ declare class TurbowarpVMEngine implements ScratchLikeVirtualMachine {
   private mouseButtons;
   getCanvas(): HTMLCanvasElement;
   applyInput(data: any): void;
+  projectUsesVideo(): boolean;
 }
 //#endregion
-export { MultiPlayConfig, MultiPlayEvents, MultiPlayKernel, MultiPlayStatus, ScratchCoords, ScratchLikeVirtualMachine, TurbowarpVMEngine };
+export { ForbiddenBecauseUsesVideoError, MultiPlayConfig, MultiPlayEvents, MultiPlayKernel, MultiPlayStatus, ScratchCoords, ScratchLikeVirtualMachine, TurbowarpVMEngine };

@@ -1,6 +1,6 @@
 {
   "name": "itchy-multiplay",
-  "version": "0.1.0-alpha",
+  "version": "0.2.0",
   "description": "Multiplayer SDK for Scratch games via WebRTC",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

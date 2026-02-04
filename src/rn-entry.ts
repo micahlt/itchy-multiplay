@@ -1,6 +1,10 @@
 // src/web-entry.ts
 import { MultiPlayKernel } from "./core/kernel";
-import { MultiPlayConfig, MultiPlayEvents } from "./core/protocol";
+import {
+  ForbiddenBecauseUsesVideoError,
+  MultiPlayConfig,
+  MultiPlayEvents,
+} from "./core/protocol";
 import { TurbowarpVMEngine } from "./engines/turbowarp";
 
 /**
@@ -18,12 +22,21 @@ import { TurbowarpVMEngine } from "./engines/turbowarp";
       const kernel = new MultiPlayKernel(config, engine);
 
       kernel.host().catch((err) => {
-        (window as any).ReactNativeWebView?.postMessage(
-          JSON.stringify({
-            type: "error",
-            payload: err.message,
-          })
-        );
+        if (err instanceof ForbiddenBecauseUsesVideoError) {
+          (window as any).ReactNativeWebView?.postMessage(
+            JSON.stringify({
+              type: "video-error",
+              payload: "Project uses video. MultiPlay is forbidden.",
+            })
+          );
+        } else {
+          (window as any).ReactNativeWebView?.postMessage(
+            JSON.stringify({
+              type: "error",
+              payload: err.message,
+            })
+          );
+        }
       });
 
       kernel.onEvent = (ev: MultiPlayEvents) => {

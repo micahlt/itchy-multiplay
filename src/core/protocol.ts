@@ -35,7 +35,8 @@ export type MultiPlayStatus =
   | "disconnected-host"
   | "error-socket"
   | "disconnected-closed"
-  | "peer-joined";
+  | "peer-joined"
+  | "forbidden-video";
 
 export type MultiPlayEvents =
   | { type: "status"; payload: MultiPlayStatus }
@@ -59,4 +60,10 @@ export interface ScratchLikeVirtualMachine {
     coords?: { x: number; y: number };
   }): void;
   getCanvas(): HTMLCanvasElement | null;
+  projectUsesVideo(): boolean;
 }
+
+/**
+ * This error is thrown because MultiPlay cannot be permitted when video is used in projects (for child privacy reasons)
+ */
+export class ForbiddenBecauseUsesVideoError extends Error {}

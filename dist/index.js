@@ -1,4 +1,11 @@
 
+//#region src/core/protocol.ts
+/**
+* This error is thrown because MultiPlay cannot be permitted when video is used in projects (for child privacy reasons)
+*/
+var ForbiddenBecauseUsesVideoError = class extends Error {};
+
+//#endregion
 //#region src/core/kernel.ts
 var MultiPlayKernel = class {
 	pc = null;
@@ -53,6 +60,11 @@ var MultiPlayKernel = class {
 	* Requires an engine with canvas streaming capabilities for the host role.
 	*/
 	async host() {
+		if (!this.engine || this.engine.projectUsesVideo()) {
+			this.onStatusChange("forbidden-video");
+			this.cleanup();
+			throw new ForbiddenBecauseUsesVideoError();
+		}
 		this.onStatusChange("initial-connect");
 		this.socket = new WebSocket(this.config.signalingUrl);
 		this.socket.onopen = () => {
@@ -351,8 +363,12 @@ var TurbowarpVMEngine = class {
 			}
 		}
 	}
+	projectUsesVideo() {
+		return window.vm.runtime.extensionManager._loadedExtensions.has("videoSensing");
+	}
 };
 
 //#endregion
+exports.ForbiddenBecauseUsesVideoError = ForbiddenBecauseUsesVideoError;
 exports.MultiPlayKernel = MultiPlayKernel;
 exports.TurbowarpVMEngine = TurbowarpVMEngine;
